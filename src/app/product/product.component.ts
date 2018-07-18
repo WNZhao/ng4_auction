@@ -9,6 +9,7 @@ export class ProductComponent implements OnInit {
 
   //声明数组存储product数组
   private products:Array<Product>;
+  private imgUrl = "http://placehold.it/320X150";
 
   constructor() { }
   //组件初始化时调用一次
