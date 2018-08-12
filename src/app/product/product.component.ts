@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl } from '../../../node_modules/@angular/forms';
+import 'rxjs/Rx';
 
 @Component({
   selector: 'app-product',
@@ -10,8 +12,14 @@ export class ProductComponent implements OnInit {
   //声明数组存储product数组
   private products:Array<Product>;
   private imgUrl = "http://placehold.it/320X150";
+  private keyWords:string;
+  private titleFilter:FormControl = new FormControl();
 
-  constructor() { }
+  constructor() {
+      this.titleFilter.valueChanges
+      .debounceTime(500)
+      .subscribe(value=>this.keyWords=value)
+   }
   //组件初始化时调用一次
   ngOnInit() {
       this.products = [
