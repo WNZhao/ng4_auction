@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '../../../node_modules/@angular/forms';
 import 'rxjs/Rx';
+import { ProductService, Product } from '../share/product.service';
 
 @Component({
   selector: 'app-product',
@@ -15,37 +16,15 @@ export class ProductComponent implements OnInit {
   private keyWords:string;
   private titleFilter:FormControl = new FormControl();
 
-  constructor() {
+  constructor(private productService:ProductService) {
       this.titleFilter.valueChanges
       .debounceTime(500)
       .subscribe(value=>this.keyWords=value)
    }
   //组件初始化时调用一次
   ngOnInit() {
-      this.products = [
-          new Product(1,"第一个商品",1.99,3.5,"学习ng4实战",["电子产品","硬件设备"]),
-          new Product(2,"第二个商品",3.99,4.5,"学习ng4实战",["硬件设备"]),
-          new Product(3,"第三个商品",4.99,2.5,"学习ng4实战",["硬件设备"]),
-          new Product(4,"第四个商品",5.99,5,"学习ng4实战",["电子产品"]),
-          new Product(5,"第五个商品",16.99,1,"学习ng4实战",["文具"]),
-          new Product(6,"第六个商品",16.99,1,"学习ng4实战",["办公用品"]),
-      ]
+      this.products = this.productService.getProducts();
   }
 
 }
 
-/* 
-  定义实体类 产品信息
-*/
-export class Product{
-    constructor(
-        public id:number,
-        public title:string,
-        public price:number,
-        public rating:number,
-        public desc:string,
-        public categories:Array<string>
-    ){
-
-    }
-}

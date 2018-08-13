@@ -14,10 +14,11 @@ import {ProductDetailComponent} from './product-detail/product-detail.component'
 import {HomeComponent} from './home/home.component';
 import {RouterModule, Routes} from '@angular/router';
 import { FilterPipe } from './pipe/filter.pipe';
+import { ProductService } from './share/product.service';
 
 const routeConfig: Routes = [
   {path: '', component: HomeComponent},
-  {path: 'product/:productTitle', component: ProductDetailComponent}
+  {path: 'product/:productId', component: ProductDetailComponent}
 ]
 
 @NgModule({
@@ -40,7 +41,7 @@ const routeConfig: Routes = [
     RouterModule.forRoot(routeConfig),
     ReactiveFormsModule
   ],
-  providers: [],
+  providers: [ProductService],
   bootstrap: [AppComponent]
 })
 export class AppModule {
