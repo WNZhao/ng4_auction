@@ -21,6 +21,10 @@ export class ProductService {
         new Comment(4, 2, "2017-05-02 22:00:00", "张三", 4, "东西不错333"),
     ];
 
+    getAllCategories():string[]{
+        return ["电子产品","硬件设备","图书"]
+    }
+
     //获取所有商品
     getProducts() {
         return this.products;
@@ -30,8 +34,8 @@ export class ProductService {
         return this.products.find((product) => product.id == id)
     }
     //获取商品的评论信息
-    getCommentsForProductId(id:number):Comment[]{
-        return this.comments.filter((comment:Comment)=>comment.productId==id)
+    getCommentsForProductId(id: number): Comment[] {
+        return this.comments.filter((comment: Comment) => comment.productId == id)
     }
 
 }
