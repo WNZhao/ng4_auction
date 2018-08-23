@@ -1,45 +1,74 @@
-import { OnInit,Component } from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
-import { Product, ProductService,Comment } from '../share/product.service';
+import { OnInit, Component } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { Product, ProductService, Comment } from '../share/product.service';
+import { WebSocketService } from '../share/web-socket.service';
+import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-product-detail',
-  templateUrl: './product-detail.component.html',
-  styleUrls: ['./product-detail.component.css']
+    selector: 'app-product-detail',
+    templateUrl: './product-detail.component.html',
+    styleUrls: ['./product-detail.component.css']
 })
 export class ProductDetailComponent implements OnInit {
 
     product: Product;
-    comments:Comment[];
+    comments: Comment[];
 
-    newRating:number=5;
-    newComment:string="";
+    newRating: number = 5;
+    newComment: string = "";
 
-    isCommentHidden:boolean=true;
+    isCommentHidden: boolean = true;
 
-  constructor(private routerInfo: ActivatedRoute,private productService:ProductService) { }
+    isWatched: boolean = false; //当前是否关注
+    currentBid: number;
 
-  ngOnInit() {
-      let productId:number = this.routerInfo.snapshot.params["productId"];
+    subscription:Subscription;
 
-      this.productService.getProduct(productId).subscribe(
-          product=>this.product=product
-      );
-      this.productService.getCommentsForProductId(productId).subscribe(
-          comments=>this.comments=comments
-      );
-  }
+    constructor(private routerInfo: ActivatedRoute,
+        private wsService: WebSocketService,
+        private productService: ProductService) { }
 
-  addComment(){
-      let comment = new Comment(0,this.product.id,new Date().toISOString(),"someone",this.newRating,this.newComment);
-      this.comments.unshift(comment);
+    ngOnInit() {
+        let productId: number = this.routerInfo.snapshot.params["productId"];
 
-      let sum = this.comments.reduce((sum,comment)=>sum+comment.rating,0);
-      this.product.rating = sum/this.comments.length;
+        this.productService.getProduct(productId).subscribe(
+            product => {
+                this.product = product;
+                this.currentBid = this.product.price;
+            }
+        );
+        this.productService.getCommentsForProductId(productId).subscribe(
+            comments => this.comments = comments
+        );
+    }
 
-      this.newComment="";
-      this.newRating=5;
-      this.isCommentHidden=true;
-  }
+    addComment() {
+        let comment = new Comment(0, this.product.id, new Date().toISOString(), "someone", this.newRating, this.newComment);
+        this.comments.unshift(comment);
+
+        let sum = this.comments.reduce((sum, comment) => sum + comment.rating, 0);
+        this.product.rating = sum / this.comments.length;
+
+        this.newComment = "";
+        this.newRating = 5;
+        this.isCommentHidden = true;
+    }
+
+    watchProduct() {
+        if(this.subscription){
+            this.subscription.unsubscribe(); //取消订阅时会调用close方法
+            this.isWatched =false;
+            this.subscription = null;
+        }else{
+            this.isWatched=true;
+            this.subscription = this.wsService.createObservableSocket("ws://localhost:8085", this.product.id)
+            .subscribe(
+                products => {
+                    let product = products.find((p) => p.productId === this.product.id);
+                    this.currentBid = product.bid
+                }
+            )
+        }
+    }
 
 }

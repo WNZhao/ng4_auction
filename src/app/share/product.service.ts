@@ -49,15 +49,15 @@ export class ProductService {
     }
 
     search(params: ProductSearchParams): Observable<Product[]> {
-        
+
         return this.http.get("/api/products", { search: this.encodeParams(params) }).map(res => res.json())
     }
     private encodeParams(params: ProductSearchParams): Object {
         return Object.keys(params)
-            .filter(key=>params[key])
+            .filter(key => params[key])
             .reduce((sum: URLSearchParams, key: string) => {
                 console.log(key, params[key]);
-                sum[key]=params[key];
+                sum[key] = params[key];
                 return sum;
             }, {});
     }

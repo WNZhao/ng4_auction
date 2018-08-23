@@ -15,6 +15,7 @@ import {HomeComponent} from './home/home.component';
 import {RouterModule, Routes} from '@angular/router';
 import { FilterPipe } from './pipe/filter.pipe';
 import { ProductService } from './share/product.service';
+import { WebSocketService } from './share/web-socket.service';
 
 const routeConfig: Routes = [
   {path: '', component: HomeComponent},
@@ -41,7 +42,7 @@ const routeConfig: Routes = [
     RouterModule.forRoot(routeConfig),
     ReactiveFormsModule
   ],
-  providers: [ProductService],
+  providers: [ProductService,WebSocketService],
   bootstrap: [AppComponent]
 })
 export class AppModule {
